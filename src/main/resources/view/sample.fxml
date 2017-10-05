@@ -1,0 +1,79 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<GridPane fx:controller="sample.Controller"
+          xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
+    <padding>
+        <Insets top="2" bottom="2" left="4" right="4"/>
+    </padding>
+
+    <Label text="CSV file: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <HBox spacing="2" alignment="CENTER"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="0"
+          GridPane.columnSpan="3">
+        <TextField fx:id="filePath" text="D:\beverages.txt"/>
+        <Button text="..." onAction="#selectFile"/>
+    </HBox>
+
+    <Label text="Emulate " GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER_LEFT">
+        <Button text="&#x25C0;" onAction="#emuDayLeft"/>
+        <Label fx:id="emuDayLabel" prefWidth="40" alignment="CENTER">
+            <padding>
+                <Insets top="1" bottom="1" left="4" right="4"/>
+            </padding>
+        </Label>
+        <Button text="&#x25B6;" onAction="#emuDayRight"/>
+    </HBox>
+    <Label text="days" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.valignment="CENTER"/>
+
+    <Label text="Report every: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER_LEFT">
+        <Button text="&#x25C0;" onAction="#redLeft"/>
+        <Label fx:id="redLabel" prefWidth="40" alignment="CENTER">
+            <padding>
+                <Insets top="1" bottom="1" left="4" right="4"/>
+            </padding>
+        </Label>
+        <Button text="&#x25B6;" onAction="#redRight"/>
+    </HBox>
+    <Label text="days" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER"/>
+
+    <Label text="Time scale"
+            GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER_LEFT">
+        <Button text="&#x25C0;" onAction="#scaleMinus"/>
+        <Label fx:id="scaleLabel" prefWidth="40" alignment="CENTER">
+            <padding>
+                <Insets top="1" bottom="1" left="4" right="4"/>
+            </padding>
+        </Label>
+        <Button text="&#x25B6;" onAction="#scalePlus"/>
+    </HBox>
+
+    <HBox spacing="2" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="4">
+        <children>
+            <Button text="Start" fx:id="startButton" onAction="#start"/>
+            <Button text="Stop" fx:id="stopButton" onAction="#stop"/>
+        </children>
+    </HBox>
+
+
+    <Label fx:id="info"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="5"
+           GridPane.columnSpan="4" prefHeight="50" prefWidth="600"/>
+    <ScrollPane hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" prefWidth="600" prefHeight="300"
+            GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.rowSpan="6">
+        <content>
+            <VBox fx:id="statistic"/>
+        </content>
+    </ScrollPane>
+</GridPane>
