@@ -5,9 +5,9 @@ import entity.BuyInfo;
 import entity.Client;
 import org.apache.log4j.Logger;
 import sample.Parameters;
+import utils.FileSaver;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,11 +75,11 @@ public class Shop implements Runnable{
 
             //Если утренне открытие - одновить время следующего события
             if (!isWorkTime && parameters.isWorkTime(time)) {
-                addNews("--- Магаз открыт");
+                addNews(time + " --------- Магазин открыт");
                 updateNextEventTime();
                 //иначе проверить остатки товара после закрытия
             } else if (isWorkTime && !parameters.isWorkTime(time)) {
-                addNews("--- Магаз закрыт");
+                addNews(time + " --------- Магазин закрыт");
                 storage.purchase();
             }
 
@@ -100,7 +100,7 @@ public class Shop implements Runnable{
 
     //Остановка магазина
     public void stop() {
-        addNews("Магаз прекращает работу");
+        addNews(time + " --------- Магазин прекращает работу");
         //сохраняем логи
         saveLog();
         //сохраняем статистику покупок и остатки продукции
@@ -114,18 +114,15 @@ public class Shop implements Runnable{
 
         infos.addAll(storage.getInfos());
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(
-                            LocalDate.from(nextLogTime) +
-                            " log.txt"));
+            FileSaver saver = new FileSaver(new File(LocalDate.from(nextLogTime) + " log.txt"));
 
             for (String s : infos) {
-                writer.write(s);
-                writer.newLine();
+                saver.write(s);
             }
 
             infos.clear();
 
-            writer.close();
+            saver.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -148,7 +145,7 @@ public class Shop implements Runnable{
         for (int i = 0; i < r.nextInt(10); i++) {
 
             Client client = new Client();
-            addNews(time + ": " + client + " зашел в магаз");
+            addNews(time + ": " + client + " зашел в магазин");
 
             //Наценка в зависимости от времени
             int markUp = parameters.getMarkUp(time);

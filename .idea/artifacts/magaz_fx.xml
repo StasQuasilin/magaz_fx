@@ -1,10 +1,22 @@
 <component name="ArtifactManager">
   <artifact type="javafx" name="magaz_fx">
     <output-path>$PROJECT_DIR$/out/artifacts/magaz_fx</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="MainApp" />
+        <option name="description" value="" />
+        <option name="htmlParamFile" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="paramFile" value="" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+      </options>
+    </properties>
     <root id="root">
       <element id="archive" name="magaz_fx.jar">
         <element id="module-output" name="magaz_fx" />
       </element>
+      <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
     </root>
   </artifact>
 </component>

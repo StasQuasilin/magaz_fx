@@ -3,18 +3,23 @@ package sample;
 import control.Shop;
 import entity.BeverageStorage;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class Controller {
+public class Controller extends GridPane {
+
+    private static final Logger log = Logger.getLogger(Controller.class);
 
     public Label info;
     public Button startButton;
@@ -37,6 +42,19 @@ public class Controller {
 
     //Запуск контроллера окна
     public Controller() {
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass()
+                    .getResource("/view/sample.fxml"));
+
+            fxmlLoader.setRoot(this);
+            fxmlLoader.setController(this);
+            fxmlLoader.load();
+
+        } catch (Exception e) {
+            log.error("... Error", e.fillInStackTrace());
+        }
+
         ActionListener al = e -> updateInfo();
         controllerTimer = new Timer(100, al);
         controllerTimer.start();
@@ -157,5 +175,12 @@ public class Controller {
     }
     public void redRight() {
         parameters.setReportEveryDays(1);
+    }
+
+    public void close() {
+        controllerTimer.stop();
+        if (magazTimer != null) {
+            magazTimer.stop();
+        }
     }
 }

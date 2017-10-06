@@ -1,11 +1,14 @@
 package entity;
 
 import org.apache.log4j.Logger;
+import utils.FileSaver;
 import utils.Utils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by ZPT_USER on 05.10.2017.
@@ -151,31 +154,21 @@ public class BeverageStorage {
         try {
 
             //Сохранение информации про остатки продукции
-            BufferedWriter writer1 = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream(file), StandardCharsets.UTF_8
-                    )
-            );
+            FileSaver saver1 = new FileSaver(file);
 
             //Сохранение статистики
-            BufferedWriter writer2 = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream("statistic.txt"),  StandardCharsets.UTF_8
-                    )
-            );
+            FileSaver saver2 = new FileSaver(new File("statistic.txt"));
 
             for (BeverageValue bv : rests) {
-                writer1.write(bv.getString());
-                writer1.newLine();
+                saver1.write(bv.getString());
 
-                writer2.write(bv.getStatistic());
-                writer2.newLine();
+                for (String s : bv.getStatistic()) {
+                    saver2.write(s);
+                }
             }
-            writer1.flush();
-            writer1.close();
 
-            writer2.flush();
-            writer2.close();
+            saver1.close();
+            saver2.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -261,14 +254,14 @@ class BeverageValue {
         return s;
     }
 
-    public String getStatistic() {
-        return beverage + ":\n" +
-                "\tЗакуплено: " + purchaseCount + "\n" +
-                "\tСумма закупок: " + totalPurchaseSum + "\n" +
-                "\tПродано: " + saleCount + "\n" +
-                "\tСумма продаж: " + totalSaleSum + "\n" +
-                "\tПрибыль: " + (totalSaleSum - totalPurchaseSum) + "\n" +
-                "\tОстаток: " + beverage.availability + "\n"
+    public String[] getStatistic() {
+        return new String[]{ beverage.toString(),
+                "\tЗакуплено: " + purchaseCount,
+                "\tСумма закупок: " + totalPurchaseSum,
+                "\tПродано: " + saleCount,
+                "\tСумма продаж: " + totalSaleSum,
+                "\tПрибыль: " + (totalSaleSum - totalPurchaseSum),
+                "\tОстаток: " + beverage.availability,}
                 ;
     }
 }
