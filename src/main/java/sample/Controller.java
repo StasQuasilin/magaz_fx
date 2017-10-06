@@ -5,6 +5,7 @@ import entity.BeverageStorage;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -23,6 +24,7 @@ public class Controller {
     public Label emuDayLabel;
     public Label redLabel;
     public VBox statistic;
+    public ScrollPane scrollPane;
 
     Parameters parameters = new Parameters();
 
@@ -64,6 +66,14 @@ public class Controller {
         }
     }
 
+    void addNewsLine(String line) {
+        statistic.getChildren().add(
+                new Label(line)
+        );
+
+        scrollPane.setVvalue(2);
+    }
+
     void update() {
         Platform.runLater(new Runnable() {
             @Override
@@ -77,18 +87,14 @@ public class Controller {
                         info.setText(magaz.getInfo());
                         if (magaz.newsSize() > 0) {
                             for (String s : magaz.getLatestsNews()) {
-                                statistic.getChildren().add(
-                                        new Label(s)
-                                );
+                                addNewsLine(s);
                             }
 
                         }
 
                         if (storage.newsSize() > 0) {
                             for (String s : storage.getNews()) {
-                                statistic.getChildren().add(
-                                        new Label(s)
-                                );
+                                addNewsLine(s);
                             }
                         }
                     }

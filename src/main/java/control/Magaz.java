@@ -161,7 +161,7 @@ public class Magaz implements Runnable{
     }
 
     public String getInfo() {
-        String info = "Время в магазу: " + time + "\n";
+        String info = "Время в магазе: " + time + "\n";
 
         if (parameters.isWorkTime(time)) {
             info += "Следующее событие в: " + neHour + ":" + neMinutes + ":" + neSeconds + "\n";
@@ -173,7 +173,7 @@ public class Magaz implements Runnable{
     }
 
     public boolean isDoWork() {
-        return isWorkTime;
+        return doWork;
     }
 
     public List<String> getLatestsNews() {

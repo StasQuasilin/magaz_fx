@@ -3,7 +3,6 @@ package entity;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,66 +20,39 @@ public class BeverageStorage {
         try {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
-                            new FileInputStream(file), "utf-8"));
+                            new FileInputStream(file), "UTF8"));
 
             rests = new LinkedList<>();
             String line;
             String separator = ",";
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                if (!line.isEmpty()) {
+                    List<String> items = parseLine(line);
 
-                List<String> words = new ArrayList<>();
-                char[] chars = line.toCharArray();
-
-                String result = "";
-                boolean block = false;
-
-                int i = 0;
-                for (char ch : chars) {
-
-                    if (ch == '\"') {
-                        block = !block;
-                    }
-
-                    if (!block) {
-                        if (ch == ',') {
-                            System.out.println(words.get(i));
-                            i++;
-                            words.add(i, "");
-                        }
-                    } else {
-                        if (!block & ch != ' ') {
-                            String s = words.get(i);
-                            words.add(i,  s);
-                        }
-
-                    }
-
-                }
-
-                IBeverage beverage;
-
-                try {
-                    String title = words.get(0);
-                    double price = Double.parseDouble(words.get(1));
-                    String type = words.get(2);
-                    double volume = Double.parseDouble(words.get(3));
-                    double availability = Double.parseDouble(words.get(5));
+                    IBeverage beverage;
 
                     try {
-                        double strength = Double.parseDouble(words.get(4));
-                        beverage = new AlcoholBeverage(title, price, type, volume, strength, availability);
-                    } catch (NumberFormatException ignore) {
-                        String consist = words.get(4);
-                        beverage = new NonAlcoholBeverage(title, price, type, volume, consist, availability);
+                        String title = items.get(0);
+                        double price = Double.parseDouble(items.get(1));
+                        String type = items.get(2);
+                        double volume = Double.parseDouble(items.get(3));
+                        double availability = Double.parseDouble(items.get(5));
+
+                        try {
+                            double strength = Double.parseDouble(items.get(4));
+                            beverage = new AlcoholBeverage(title, price, type, volume, strength, availability);
+                        } catch (NumberFormatException ignore) {
+                            String consist = items.get(4);
+                            beverage = new NonAlcoholBeverage(title, price, type, volume, consist, availability);
+                        }
+
+                        addNews("Добавлено " + beverage.availability + " " + beverage + " на склад");
+                        rests.add(new BeverageValue(beverage, this));
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        addNews("Неправильная информация " + line);
                     }
-
-                    addNews("Добавлено " + beverage.availability + " " + beverage + " на склад");
-                    rests.add(new BeverageValue(beverage, this));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    addNews("Неправильная информация " + line);
                 }
             }
 
@@ -91,8 +63,37 @@ public class BeverageStorage {
         }
     }
 
+    private List<String> parseLine(String line) {
+
+        System.out.println("Parse: " + line);
+
+        List<String> result = new LinkedList<>();
+
+        String s = "";
+        boolean lock = false;
+        for (char c : line.toCharArray()) {
+            if (c == '\"') {
+                lock = !lock;
+            }
+
+            if (!lock && c == ',') {
+                System.out.println(s);
+                result.add(new String(s));
+                s = "";
+            } else {
+                s += c;
+            }
+
+        }
+
+        System.out.println(s);
+        result.add(s);
+
+        return result;
+    }
+
     public void purchase() {
-        addNews("����� ���");
+        addNews("Итоги дня");
 
         rests.forEach(entity.BeverageValue::checkCount);
     }
@@ -147,15 +148,20 @@ public class BeverageStorage {
 
     public void save() {
         try {
+
+//            BufferedReader reader = new BufferedReader(
+//                    new InputStreamReader(
+//                            new FileInputStream(file), "UTF8"));
+
             BufferedWriter writer1 = new BufferedWriter(
-                    new FileWriter(
-                            file
+                    new OutputStreamWriter(
+                            new FileOutputStream(file), "UTF8"
                     )
             );
 
             BufferedWriter writer2 = new BufferedWriter(
-                    new FileWriter(
-                            "statistic.txt"
+                    new OutputStreamWriter(
+                            new FileOutputStream("statistic.txt")
                     )
             );
 
@@ -199,9 +205,9 @@ class BeverageValue {
             totalPurchaseSum += pCount * beverage.price;
             purchaseCount += pCount;
 
-            storage.addNews("��������� " + pCount + " �������� " + beverage);
+            storage.addNews("Закуплено " + pCount + " продукта " + beverage);
         } else {
-            storage.addNews(beverage + " �������: " + beverage.availability);
+            storage.addNews(beverage + " остаток: " + beverage.availability);
         }
     }
 
@@ -227,7 +233,7 @@ class BeverageValue {
                 beverage.price + ", " +
                 beverage.beverageType + ", " +
                 beverage.volume + ", " +
-                "\"" + ut + "\", " +
+                ut + ", " +
                 beverage.availability + "\n"
                 ;
         return s;
@@ -235,11 +241,11 @@ class BeverageValue {
 
     public String getStatistic() {
         return beverage + ":\n" +
-                "\t�������: " + purchaseCount + "\n" +
-                "\t����� ������: " + totalPurchaseSum + "\n" +
-                "\t���������: " + saleCount + "\n" +
-                "\t����� �������: " + totalSaleSum + "\n" +
-                "\t�������: " + (totalSaleSum - totalPurchaseSum) + "\n"
+                "\tЗакуплено: " + purchaseCount + "\n" +
+                "\tСумма закупок: " + totalPurchaseSum + "\n" +
+                "\tПродано: " + saleCount + "\n" +
+                "\tСумма продаж: " + totalSaleSum + "\n" +
+                "\tПрибыль: " + (totalSaleSum - totalPurchaseSum) + "\n"
                 ;
     }
 }

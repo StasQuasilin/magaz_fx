@@ -8,13 +8,11 @@ import sample.StageHolder;
 
 public class MainApp extends Application {
 
-    public static Stage mainStage;
-
     @Override
     public void start(Stage primaryStage) throws Exception{
         Platform.setImplicitExit(false);
         Parent root = FXMLLoader.load(getClass().getResource("/view/sample.fxml"));
-        primaryStage.setTitle("AlcoMagaz 3000");
+        primaryStage.setTitle("АлкоМагаз 3000");
         primaryStage.setScene(new Scene(root));
 
         primaryStage.show();
