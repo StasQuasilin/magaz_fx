@@ -18,23 +18,32 @@ import java.util.Random;
 /**
  * Created by ZPT_USER on 05.10.2017.
  */
+//Основной класс, эмулирует работу магазина
 public class Shop implements Runnable{
 
     private static final Logger log = Logger.getLogger(Shop.class);
-    private BeverageStorage storage;
-
-    LocalDateTime time;
-    LocalDateTime nextEventTime;
-    LocalDateTime startTime;
-    LocalDateTime nextStatisticTime;
-    LocalDateTime stopTime;
 
     private Parameters parameters;
-    private boolean doWork = false;
+    private BeverageStorage storage;
 
-    long lastNanos = System.nanoTime();
-    long timeSteep = 0;
+    //Текущее время в магазине
+    LocalDateTime time;
+    //Время следующего события
+    LocalDateTime nextEventTime;
+    //Время начала работы
+    LocalDateTime startTime;
+    //Время следующего вывода лога
+    LocalDateTime nextLogTime;
+    //Время остановки
+    LocalDateTime stopTime;
+
+    private boolean doWork = false;
     boolean isWorkTime = false;
+
+    //Время последнего цыкла
+    long lastNanos = System.nanoTime();
+    //Время цыкла
+    long timeSteep = 0;
     Random r = new Random();
 
     public Shop(Parameters parameters, BeverageStorage storage) {
@@ -42,28 +51,33 @@ public class Shop implements Runnable{
         this.storage = storage;
 
         startTime = time = LocalDateTime.now();
-        nextStatisticTime = startTime.plusDays(parameters.getReportEveryDays());
+        nextLogTime = startTime.plusDays(parameters.getReportEveryDays());
         stopTime = startTime.plusDays(parameters.getEmuDays());
 
         doWork = true;
         updateNextEventTime();
     }
 
+    //Цыкл работы
     public void run() {
 
         updateTimer();
 
+        //Не пора ли остановиться?
         if (time.isAfter(stopTime)) {
             stop();
         } else {
 
-            if (time.isAfter(nextStatisticTime)) {
+            //Не пора ли выводить лог
+            if (time.isAfter(nextLogTime)) {
                 saveLog();
             }
 
+            //Если утренне открытие - одновить время следующего события
             if (!isWorkTime && parameters.isWorkTime(time)) {
                 addNews("--- Магаз открыт");
                 updateNextEventTime();
+                //иначе проверить остатки товара после закрытия
             } else if (isWorkTime && !parameters.isWorkTime(time)) {
                 addNews("--- Магаз закрыт");
                 storage.purchase();
@@ -71,31 +85,37 @@ public class Shop implements Runnable{
 
             isWorkTime = parameters.isWorkTime(time);
 
+            //Если текущее время с 8 до 22...
             if (isWorkTime) {
-
+                //и если прошло время события...
                 if (isEventTime()) {
+                    //приходит новый клиент
                     incomeClient();
+                    //обновляется время следующего события
                     updateNextEventTime();
                 }
             }
         }
     }
 
+    //Остановка магазина
     public void stop() {
         addNews("Магаз прекращает работу");
-
+        //сохраняем логи
         saveLog();
+        //сохраняем статистику покупок и остатки продукции
         storage.save();
 
         doWork = false;
     }
 
+    //Сохранение логов работы
     private void saveLog() {
 
         infos.addAll(storage.getInfos());
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(
-                            LocalDate.from(nextStatisticTime) +
+                            LocalDate.from(nextLogTime) +
                             " log.txt"));
 
             for (String s : infos) {
@@ -110,23 +130,30 @@ public class Shop implements Runnable{
             e.printStackTrace();
         }
 
-        nextStatisticTime = time.plusDays(parameters.getReportEveryDays());
+        nextLogTime = time.plusDays(parameters.getReportEveryDays());
     }
 
+    //Вывод информации в програмную консоль и в логи программы
     void addNews(String value) {
         log.info(value);
         news.add(value);
     }
 
     List<String> infos = new LinkedList<>();
+
+    //Новые клиенты...
     private void incomeClient() {
 
+        //...от 1 до 10
         for (int i = 0; i < r.nextInt(10); i++) {
 
             Client client = new Client();
             addNews(time + ": " + client + " зашел в магаз");
 
+            //Наценка в зависимости от времени
             int markUp = parameters.getMarkUp(time);
+
+            //Покупка от 0 до 10 товаров
             for (BuyInfo bi : storage.tryBuy(r.nextInt(10), markUp)) {
 
                 addNews("\t" + client +
@@ -142,18 +169,22 @@ public class Shop implements Runnable{
         return time.isAfter(nextEventTime);
     }
 
+    //Обновление местного времени
     void updateTimer() {
         timeSteep = (System.nanoTime() - lastNanos) * parameters.getScale();
         lastNanos = System.nanoTime();
         time = time.plusNanos(timeSteep);
     }
 
+    //Обновление таймера следующего осбытия
     void updateNextEventTime() {
-
+        //...текущее время + 0...30 секунд
         nextEventTime = time.plusSeconds(r.nextInt(30));
+        //новое время + 0...30 минут
         nextEventTime = nextEventTime.plusMinutes(r.nextInt(30));
     }
 
+    //Информация о времени работы
     public String getInfo() {
         if (doWork) {
             String info = String.format("Начало работи: %1$td-%1$tm-%1$ty, %1$tH:%1$tM:%1$tS", startTime) + "\n";

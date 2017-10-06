@@ -35,22 +35,29 @@ public class Controller {
 
     File file;
 
+    //Запуск контроллера окна
     public Controller() {
         ActionListener al = e -> updateInfo();
         controllerTimer = new Timer(100, al);
         controllerTimer.start();
     }
-
+    //Начало работы магазина
     public void start() {
+        //Если файл указан вверно...
         if (checkFile()) {
+            //Очищаем статистику
             statistic.getChildren().clear();
+            //Инициализируем магазин
             shop = new Shop(parameters, storage);
+
             ActionListener al = e -> checkMagazStatus();
             magazTimer = new Timer(100, al);
+            //Стартуем
             magazTimer.start();
         }
     }
 
+    //Остановка магазина
     public void stop() {
         if(shop != null) {
             if (shop.isDoWork()) {
@@ -59,6 +66,7 @@ public class Controller {
         }
     }
 
+    //Проверка статуса работы магазина
     private void checkMagazStatus() {
         if (shop.isDoWork()) {
             shop.run();
@@ -67,6 +75,7 @@ public class Controller {
         }
     }
 
+    //Проверка файла
     private boolean checkFile() {
         if (file == null) {
             file = new File(filePath.getText());
@@ -80,6 +89,7 @@ public class Controller {
         return false;
     }
 
+    //Новая строка в консоли приложения
     void addNewsLine(String line) {
         statistic.getChildren().add(
                 new Label(line)
@@ -88,6 +98,7 @@ public class Controller {
         scrollPane.setVvalue(100);
     }
 
+    //Обновление выводимой информации
     void updateInfo() {
         Platform.runLater(new Runnable() {
             @Override

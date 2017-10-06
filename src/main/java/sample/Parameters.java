@@ -4,8 +4,11 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 public class Parameters {
+    //Ускорение времени
     private int scale = 8000;
+    //Количество эмулированных дней
     private int emuDays = 1;
+    //Промежуток дней для вывода логов
     private int reportEveryDays = 1;
 
     public int getScale() {

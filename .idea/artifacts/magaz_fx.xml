@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="magaz_fx">
+    <output-path>$PROJECT_DIR$/out/artifacts/magaz_fx</output-path>
+    <root id="root">
+      <element id="archive" name="magaz_fx.jar">
+        <element id="module-output" name="magaz_fx" />
+      </element>
+    </root>
+  </artifact>
+</component>
