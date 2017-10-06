@@ -1,6 +1,6 @@
 package sample;
 
-import control.Magaz;
+import control.Shop;
 import entity.BeverageStorage;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -27,20 +27,43 @@ public class Controller {
     public ScrollPane scrollPane;
 
     Parameters parameters = new Parameters();
-
-    Magaz magaz;
+    Shop shop;
     BeverageStorage storage = new BeverageStorage();
 
+    Timer controllerTimer;
+    Timer magazTimer;
+
+    File file;
+
     public Controller() {
-        ActionListener al = e -> update();
-        new Timer(100, al).start();
+        ActionListener al = e -> updateInfo();
+        controllerTimer = new Timer(100, al);
+        controllerTimer.start();
     }
 
     public void start() {
         if (checkFile()) {
-            magaz = new Magaz(parameters, storage);
-            thread = new Thread(magaz);
-            thread.start();
+            statistic.getChildren().clear();
+            shop = new Shop(parameters, storage);
+            ActionListener al = e -> checkMagazStatus();
+            magazTimer = new Timer(100, al);
+            magazTimer.start();
+        }
+    }
+
+    public void stop() {
+        if(shop != null) {
+            if (shop.isDoWork()) {
+                shop.stop();
+            }
+        }
+    }
+
+    private void checkMagazStatus() {
+        if (shop.isDoWork()) {
+            shop.run();
+        } else {
+            magazTimer.stop();
         }
     }
 
@@ -57,24 +80,15 @@ public class Controller {
         return false;
     }
 
-    Thread thread;
-    public void stop() {
-        if(magaz != null) {
-            if (magaz.isDoWork()) {
-                magaz.stop();
-            }
-        }
-    }
-
     void addNewsLine(String line) {
         statistic.getChildren().add(
                 new Label(line)
         );
 
-        scrollPane.setVvalue(2);
+        scrollPane.setVvalue(100);
     }
 
-    void update() {
+    void updateInfo() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -82,27 +96,24 @@ public class Controller {
                 redLabel.setText(String.valueOf(parameters.getReportEveryDays()));
                 scaleLabel.setText("x" + parameters.getScale());
 
-                if (magaz != null) {
-                    if (magaz.isDoWork()) {
-                        info.setText(magaz.getInfo());
-                        if (magaz.newsSize() > 0) {
-                            for (String s : magaz.getLatestsNews()) {
-                                addNewsLine(s);
-                            }
-
+                if (shop != null) {
+                    info.setText(shop.getInfo());
+                    if (shop.newsSize() > 0) {
+                        for (String s : shop.getLatestsNews()) {
+                            addNewsLine(s);
                         }
 
-                        if (storage.newsSize() > 0) {
-                            for (String s : storage.getNews()) {
-                                addNewsLine(s);
-                            }
+                    }
+
+                    if (storage.newsSize() > 0) {
+                        for (String s : storage.getNews()) {
+                            addNewsLine(s);
                         }
                     }
                 }
             }
         });
     }
-
 
     public void scaleMinus() {
         parameters.setScale(-1);
@@ -111,7 +122,6 @@ public class Controller {
         parameters.setScale(1);
     }
 
-    File file;
     public void selectFile() {
         FileChooser.ExtensionFilter extFilter =
                 new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");

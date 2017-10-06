@@ -2,7 +2,7 @@
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/src/main/java/MainApp.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/control/Magaz.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/control/Shop.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/entity/BeverageStorage.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/entity/Client.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/sample/Controller.java" charset="UTF-8" />

@@ -13,7 +13,7 @@ public class MainApp extends Application {
         Platform.setImplicitExit(false);
         Parent root = FXMLLoader.load(getClass().getResource("/view/sample.fxml"));
         primaryStage.setTitle("АлкоМагаз 3000");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(root, 924, 305));
 
         primaryStage.show();
 

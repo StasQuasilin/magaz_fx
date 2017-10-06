@@ -1,10 +1,11 @@
 package entity;
 
 import org.apache.log4j.Logger;
+import utils.Utils;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Created by ZPT_USER on 05.10.2017.
@@ -12,6 +13,8 @@ import java.util.List;
 public class BeverageStorage {
     private static final Logger log = Logger.getLogger(BeverageStorage.class);
     List<BeverageValue> rests;
+    List<String> news = new LinkedList<>();
+    List<String> infos = new LinkedList<>();
 
     File file;
     public void readFile(File file) {
@@ -24,10 +27,10 @@ public class BeverageStorage {
 
             rests = new LinkedList<>();
             String line;
-            String separator = ",";
+
             while ((line = reader.readLine()) != null) {
                 if (!line.isEmpty()) {
-                    List<String> items = parseLine(line);
+                    List<String> items = Utils.parseLine(line);
 
                     IBeverage beverage;
 
@@ -61,35 +64,8 @@ public class BeverageStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    private List<String> parseLine(String line) {
-
-        System.out.println("Parse: " + line);
-
-        List<String> result = new LinkedList<>();
-
-        String s = "";
-        boolean lock = false;
-        for (char c : line.toCharArray()) {
-            if (c == '\"') {
-                lock = !lock;
-            }
-
-            if (!lock && c == ',') {
-                System.out.println(s);
-                result.add(new String(s));
-                s = "";
-            } else {
-                s += c;
-            }
-
-        }
-
-        System.out.println(s);
-        result.add(s);
-
-        return result;
+        purchase();
     }
 
     public void purchase() {
@@ -97,35 +73,48 @@ public class BeverageStorage {
 
         rests.forEach(entity.BeverageValue::checkCount);
     }
+    Random r = new Random();
 
-    public List<IBeverage> tryBuy(int count, int makeUp) {
-        List<IBeverage> productList = new LinkedList<>();
+    public List<BuyInfo> tryBuy(int count, int makeUp) {
+        List<BuyInfo> buyInfos = new ArrayList<>();
 
-        int i = 0;
+        List<BeverageValue> temp = new LinkedList<>();
+
         for (BeverageValue bv : rests) {
-            if (i < count) {
-                if (bv.beverage.availability > 0) {
-
-                    if (productList.size() > 1) {
-                        bv.sale(1, 7);
-                    } else {
-                        bv.sale(1, makeUp);
-                    }
-
-                    productList.add(bv.beverage);
-
-                    i++;
-                }
-            } else {
-                break;
+            if (bv.beverage.availability > 0) {
+                temp.add(bv);
             }
         }
 
-        return productList;
+        int buyCount = 0;
+
+        if (temp.size() > 0) {
+            while (buyCount < count) {
+
+                BeverageValue value = temp.get(r.nextInt(temp.size()));
+
+                if (value.beverage.availability > 0) {
+                    int c = r.nextInt(10);
+                    if (c > 0) {
+                        buyCount += buy(c, buyInfos, makeUp, value);
+                    }
+                }
+
+            }
+        }
+
+        return buyInfos;
     }
 
-    List<String> news = new LinkedList<>();
-    List<String> infos = new LinkedList<>();
+    private static double buy(int count, List<BuyInfo> productBox, int makeUp, BeverageValue bv) {
+        if (productBox.size() > 1)
+            makeUp = 7;
+
+        double c = bv.sale(count, makeUp);
+        productBox.add(new BuyInfo(bv.beverage, c, makeUp));
+        return c;
+    }
+
     public int newsSize() {
         return news.size();
     }
@@ -155,19 +144,22 @@ public class BeverageStorage {
 
             BufferedWriter writer1 = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream(file), "UTF8"
+                            new FileOutputStream(file), StandardCharsets.UTF_8
                     )
             );
 
             BufferedWriter writer2 = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream("statistic.txt")
+                            new FileOutputStream("statistic.txt"),  StandardCharsets.UTF_8
                     )
             );
 
             for (BeverageValue bv : rests) {
                 writer1.write(bv.getString());
+                writer1.newLine();
+
                 writer2.write(bv.getStatistic());
+                writer2.newLine();
             }
             writer1.flush();
             writer1.close();
@@ -205,18 +197,23 @@ class BeverageValue {
             totalPurchaseSum += pCount * beverage.price;
             purchaseCount += pCount;
 
-            storage.addNews("Закуплено " + pCount + " продукта " + beverage);
+            storage.addNews("\tЗакуплено " + pCount + " продукта " + beverage);
         } else {
-            storage.addNews(beverage + " остаток: " + beverage.availability);
+            storage.addNews("\t" + beverage + " остаток: " + beverage.availability);
         }
     }
 
-    void sale(double count, double makeUp) {
+    double sale(double count, double makeUp) {
+        if (beverage.availability < count) {
+            count = beverage.availability;
+        }
+
         beverage.availability -= count;
         makeUp = 1 + makeUp * 0.01;
 
         saleCount += count;
         totalSaleSum += count * beverage.price * makeUp;
+        return count;
     }
 
     public String getString() {
@@ -229,11 +226,11 @@ class BeverageValue {
             NonAlcoholBeverage b = (NonAlcoholBeverage) beverage;
             ut = b.getConsist();
         }
-        String s = beverage.beverageName + ", " +
-                beverage.price + ", " +
-                beverage.beverageType + ", " +
-                beverage.volume + ", " +
-                ut + ", " +
+        String s = beverage.beverageName + "," +
+                beverage.price + "," +
+                beverage.beverageType + "," +
+                beverage.volume + "," +
+                ut + "," +
                 beverage.availability + "\n"
                 ;
         return s;
@@ -245,7 +242,8 @@ class BeverageValue {
                 "\tСумма закупок: " + totalPurchaseSum + "\n" +
                 "\tПродано: " + saleCount + "\n" +
                 "\tСумма продаж: " + totalSaleSum + "\n" +
-                "\tПрибыль: " + (totalSaleSum - totalPurchaseSum) + "\n"
+                "\tПрибыль: " + (totalSaleSum - totalPurchaseSum) + "\n" +
+                "\tОстаток: " + beverage.availability + "\n"
                 ;
     }
 }

@@ -4,7 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 public class Parameters {
-    private int scale = 800;
+    private int scale = 8000;
     private int emuDays = 1;
     private int reportEveryDays = 1;
 
@@ -13,22 +13,28 @@ public class Parameters {
     }
     public void setScale(int s) {
         if (s < 0) {
-            if (scale == 1) {
-                return;
+            if (scale > 1 && scale <= 10) {
+                scale += s;
+            } else if (scale > 10 && scale <= 100) {
+                scale += s * 10;
+            } else if (scale > 100 && scale <= 1000) {
+                scale += s * 100;
+            } else if (scale > 1000 && scale <= 10000) {
+                scale += s * 1000;
             }
         } else {
-            if (scale == 1000) {
-                return;
+            if (scale < 10000) {
+                if (scale > 900) {
+                    scale += s * 1000;
+                } else if (scale > 90) {
+                    scale += s * 100;
+                } else if(scale > 9) {
+                    scale += s * 10;
+                } else {
+                    scale += s;
+                }
             }
         }
-        if (scale > 90) {
-            scale += s * 100;
-        } else if(scale > 9) {
-            scale += s * 10;
-        } else {
-            scale += s;
-        }
-
     }
 
     public int getEmuDays() {

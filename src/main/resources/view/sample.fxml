@@ -7,73 +7,80 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
-<GridPane fx:controller="sample.Controller"
-          xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
-    <padding>
-        <Insets top="2" bottom="2" left="4" right="4"/>
-    </padding>
+<VBox fx:controller="sample.Controller"
+      xmlns:fx="http://javafx.com/fxml">
+    <GridPane  hgap="10" vgap="10">
+        <padding>
+            <Insets top="2" bottom="2" left="4" right="4"/>
+        </padding>
 
-    <Label text="CSV файл: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-    <HBox spacing="2" alignment="CENTER"
-          GridPane.columnIndex="1"
-          GridPane.rowIndex="0"
-          GridPane.columnSpan="3">
-        <TextField fx:id="filePath" text="D:\beverages.txt"/>
-        <Button text="..." onAction="#selectFile"/>
-    </HBox>
+        <Label text="CSV файл: " GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <HBox spacing="2" alignment="CENTER"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="0"
+              GridPane.columnSpan="3">
+            <TextField fx:id="filePath" text="D:\beverages.txt"/>
+            <Button text="..." onAction="#selectFile"/>
+        </HBox>
 
-    <Label text="Эмулировать" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER_LEFT">
-        <Button text="&#x25C0;" onAction="#emuDayLeft"/>
-        <Label fx:id="emuDayLabel" prefWidth="40" alignment="CENTER">
-            <padding>
-                <Insets top="1" bottom="1" left="4" right="4"/>
-            </padding>
-        </Label>
-        <Button text="&#x25B6;" onAction="#emuDayRight"/>
-    </HBox>
-    <Label text="дней" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.valignment="CENTER"/>
+        <Label text="Эмулировать" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="CENTER_LEFT">
+            <Button text="&#x25C0;" onAction="#emuDayLeft"/>
+            <Label fx:id="emuDayLabel" prefWidth="40" alignment="CENTER">
+                <padding>
+                    <Insets top="1" bottom="1" left="4" right="4"/>
+                </padding>
+            </Label>
+            <Button text="&#x25B6;" onAction="#emuDayRight"/>
+        </HBox>
+        <Label text="дней" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.valignment="CENTER"/>
 
-    <Label text="Отчет каждые: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER_LEFT">
-        <Button text="&#x25C0;" onAction="#redLeft"/>
-        <Label fx:id="redLabel" prefWidth="40" alignment="CENTER">
-            <padding>
-                <Insets top="1" bottom="1" left="4" right="4"/>
-            </padding>
-        </Label>
-        <Button text="&#x25B6;" onAction="#redRight"/>
-    </HBox>
-    <Label text="дней" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER"/>
+        <Label text="Отчет каждые: " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="CENTER_LEFT">
+            <Button text="&#x25C0;" onAction="#redLeft"/>
+            <Label fx:id="redLabel" prefWidth="40" alignment="CENTER">
+                <padding>
+                    <Insets top="1" bottom="1" left="4" right="4"/>
+                </padding>
+            </Label>
+            <Button text="&#x25B6;" onAction="#redRight"/>
+        </HBox>
+        <Label text="дней" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER"/>
 
-    <Label text="Ускорение времени"
-            GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-    <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER_LEFT">
-        <Button text="&#x25C0;" onAction="#scaleMinus"/>
-        <Label fx:id="scaleLabel" prefWidth="40" alignment="CENTER">
-            <padding>
-                <Insets top="1" bottom="1" left="4" right="4"/>
-            </padding>
-        </Label>
-        <Button text="&#x25B6;" onAction="#scalePlus"/>
-    </HBox>
+        <Label text="Ускорение времени"
+               GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <HBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="CENTER_LEFT">
+            <Button text="&#x25C0;" onAction="#scaleMinus"/>
+            <Label fx:id="scaleLabel" prefWidth="40" alignment="CENTER">
+                <padding>
+                    <Insets top="1" bottom="1" left="4" right="4"/>
+                </padding>
+            </Label>
+            <Button text="&#x25B6;" onAction="#scalePlus"/>
+        </HBox>
 
-    <HBox spacing="2" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="4">
-        <children>
-            <Button text="Старт" fx:id="startButton" onAction="#start"/>
-            <Button text="Стоп" fx:id="stopButton" onAction="#stop"/>
-        </children>
-    </HBox>
+        <HBox spacing="2" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="4">
+            <children>
+                <Button text="Старт" fx:id="startButton" onAction="#start"/>
+                <Button text="Стоп" fx:id="stopButton" onAction="#stop"/>
+            </children>
+        </HBox>
 
 
-    <Label fx:id="info"
-           GridPane.columnIndex="0"
-           GridPane.rowIndex="5"
-           GridPane.columnSpan="4" prefHeight="50" prefWidth="600"/>
-    <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" prefWidth="600" prefHeight="300"
-            GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.rowSpan="6">
-        <content>
-            <VBox fx:id="statistic"/>
-        </content>
-    </ScrollPane>
-</GridPane>
+        <Label fx:id="info"
+               GridPane.columnIndex="0"
+               GridPane.rowIndex="5"
+               GridPane.columnSpan="4" prefWidth="600"/>
+
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" prefWidth="600" prefHeight="300"
+                    GridPane.columnIndex="5" GridPane.rowIndex="0" GridPane.rowSpan="6">
+            <content>
+                <VBox fx:id="statistic">
+                    <padding>
+                        <Insets top="1" bottom="1" left="2" right="2"/>
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </GridPane>
+</VBox>
